@@ -481,27 +481,34 @@
     }
 
     function openHoyaList(event, projectID = "") {
-      event.preventDefault();
+  event.preventDefault();
 
-      const destinationUrl = buildProjectUrl(projectID);
+  const destinationUrl = buildProjectUrl(projectID);
 
-      if (isMobileDevice()) {
-        window.location.href = destinationUrl;
-        return;
-      }
+  // Record "Contact in HoyaList" conversion
+  if (typeof gtag === "function") {
+    gtag('event', 'conversion', {
+      'send_to': 'AW-16728099747/HrqJCL3g--wcEKOXyqg-'
+    });
+  }
 
-      const qrCode = document.getElementById("hoyalistQrCode");
-      const modalLink = document.getElementById("hoyalistModalLink");
+  if (isMobileDevice()) {
+    window.location.href = destinationUrl;
+    return;
+  }
 
-      qrCode.src =
-        "https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=" +
-        encodeURIComponent(destinationUrl);
+   const qrCode = document.getElementById("hoyalistQrCode");
+   const modalLink = document.getElementById("hoyalistModalLink");
 
-      modalLink.href = destinationUrl;
+  qrCode.src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=" +
+    encodeURIComponent(destinationUrl);
 
-      document.getElementById("hoyalistModal").classList.add("show");
-      document.body.style.overflow = "hidden";
-    }
+  modalLink.href = destinationUrl;
+
+  document.getElementById("hoyalistModal").classList.add("show");
+  document.body.style.overflow = "hidden";
+   }
 
     function closeHoyaListModal() {
       document.getElementById("hoyalistModal").classList.remove("show");
