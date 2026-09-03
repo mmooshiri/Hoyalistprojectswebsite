@@ -480,13 +480,13 @@
       return `${HOYALIST_URL}/project?id=${encodeURIComponent(projectID)}`;
     }
 
-    function openHoyaList(event, projectID = "") {
+    function openHoyaList(event, projectID = "", trackConversion = false) {
   event.preventDefault();
 
   const destinationUrl = buildProjectUrl(projectID);
 
-  // Record "Contact in HoyaList" conversion
-  if (typeof gtag === "function") {
+  // Record conversion only for "Contact in HoyaList" project clicks
+  if (trackConversion && typeof gtag === "function") {
     gtag('event', 'conversion', {
       'send_to': 'AW-16728099747/HrqJCL3g--wcEKOXyqg-'
     });
@@ -497,8 +497,8 @@
     return;
   }
 
-   const qrCode = document.getElementById("hoyalistQrCode");
-   const modalLink = document.getElementById("hoyalistModalLink");
+  const qrCode = document.getElementById("hoyalistQrCode");
+  const modalLink = document.getElementById("hoyalistModalLink");
 
   qrCode.src =
     "https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=" +
@@ -508,7 +508,7 @@
 
   document.getElementById("hoyalistModal").classList.add("show");
   document.body.style.overflow = "hidden";
-   }
+}
 
     function closeHoyaListModal() {
       document.getElementById("hoyalistModal").classList.remove("show");
@@ -638,7 +638,7 @@
               class="view-button"
               href="${HOYALIST_URL}"
               data-project-id="${escapeHTML(project.projectID || "")}"
-              onclick="openHoyaList(event, this.dataset.projectId)"
+              onclick="openHoyaList(event, this.dataset.projectId, true)"
             >
               Contact in HoyaList
             </a>
