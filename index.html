@@ -17,7 +17,7 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Browse homeowner projects currently posted on HoyaList." />
+  <meta name="description" content="Browse homeowner projects by location for free before downloading HoyaList. Contractors can create a free profile to contact homeowners." />
   <title>Homeowner Projects | HoyaList</title>
 
   <style>
@@ -52,6 +52,13 @@
       color: inherit;
     }
 
+    .free-label { display: inline-block; margin-bottom: 16px; padding: 7px 12px; background: rgba(255,255,255,.17); border: 1px solid rgba(255,255,255,.4); border-radius: 999px; font-size: 13px; font-weight: 750; }
+    .how-it-works { margin: 0 0 28px; padding: 24px; background: white; border: 1px solid var(--border); border-radius: var(--radius); }
+    .how-it-works h2 { margin: 0 0 14px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .step strong { display: block; margin-bottom: 7px; }
+    .step p { margin: 0; color: var(--muted); line-height: 1.5; }
+    @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
     .hero {
       background: linear-gradient(135deg, #0f5fd2, #2c7df0);
       color: white;
@@ -402,25 +409,33 @@
     <div class="hero-inner">
       <div class="brand">HoyaList</div>
 
-      <h1>Homeowner projects are available now.</h1>
+      <span class="free-label">Free for contractors</span>
+      <h1>Find Homeowner Projects Near You</h1>
 
       <p>
-        Browse projects homeowners have posted on HoyaList.
-        Contractors can join for free and contact homeowners directly through the app.
+        Browse homeowner projects by location before downloading the app. No account is needed to preview listings. Create a free contractor profile in HoyaList to contact homeowners.
       </p>
 
       <div class="hero-actions">
-        <a class="button button-light" href="https://hoyalistapp.com" onclick="openHoyaList(event)">
-          Get HoyaList
+        <a class="button button-light" href="#projects" onclick="trackEvent('browse_projects_click', {source: 'hero'})">
+          Browse Available Projects
         </a>
-        <a class="button button-outline" href="#projects">
-          Browse Projects
+        <a class="button button-outline" href="https://hoyalistapp.com" onclick="openHoyaList(event)">
+          Get HoyaList — Free
         </a>
       </div>
     </div>
   </header>
 
   <main class="page" id="projects">
+    <section class="how-it-works" aria-labelledby="howTitle">
+      <h2 id="howTitle">How HoyaList Works</h2>
+      <div class="steps">
+        <div class="step"><strong>1. Browse projects</strong><p>Explore homeowner listings and search by city, state, or type of work. No account required.</p></div>
+        <div class="step"><strong>2. Create a free profile</strong><p>Download HoyaList and register as a contractor when you find an opportunity of interest.</p></div>
+        <div class="step"><strong>3. Contact homeowners</strong><p>Use HoyaList to reach out directly about projects you want to pursue.</p></div>
+      </div>
+    </section>
 
     <section class="toolbar" aria-label="Project filters">
       <input
@@ -480,12 +495,17 @@
       return `${HOYALIST_URL}/project?id=${encodeURIComponent(projectID)}`;
     }
 
+    function trackEvent(eventName, params = {}) {
+      if (typeof gtag === "function") gtag("event", eventName, params);
+    }
+
     function openHoyaList(event, projectID = "", trackConversion = false) {
   event.preventDefault();
+  trackEvent(trackConversion ? "contact_in_hoyalist_click" : "get_hoyalist_click", {has_project_id: Boolean(projectID)});
 
   const destinationUrl = buildProjectUrl(projectID);
 
-  // Record conversion only for "Contact in HoyaList" project clicks
+  // Existing Google Ads click conversion retained; this is NOT a completed signup.
   if (trackConversion && typeof gtag === "function") {
     gtag('event', 'conversion', {
       'send_to': 'AW-16728099747/HrqJCL3g--wcEKOXyqg-'
@@ -707,6 +727,7 @@
         }
 
         allProjects = data.projects;
+        trackEvent("projects_loaded", {project_count: allProjects.length});
 
         populateStateFilter(allProjects);
 
@@ -724,8 +745,18 @@
       }
     }
 
-    searchInput.addEventListener("input", renderProjects);
-    stateFilter.addEventListener("change", renderProjects);
+    let searchTrackTimer;
+    searchInput.addEventListener("input", () => {
+      renderProjects();
+      clearTimeout(searchTrackTimer);
+      searchTrackTimer = setTimeout(() => {
+        if (searchInput.value.trim()) trackEvent("project_search", {search_length: searchInput.value.trim().length});
+      }, 700);
+    });
+    stateFilter.addEventListener("change", () => {
+      renderProjects();
+      trackEvent("project_state_filter", {state: stateFilter.value || "all"});
+    });
 
     loadProjects();
   </script>
