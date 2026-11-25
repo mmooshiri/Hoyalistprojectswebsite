@@ -22,7 +22,7 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Browse homeowner projects by location for free before downloading HoyaList. Contractors can create a free profile to contact homeowners." />
+  <meta name="description" content="Browse real homeowner project opportunities on HoyaList. New projects are added daily. Create a free contractor profile and contact homeowners directly." />
   <title>Find Contractor Jobs &amp; Homeowner Projects | HoyaList</title>
 
   <style>
@@ -430,14 +430,17 @@
       <span class="free-label">Free for contractors</span>
       <h1>Your Next Job Starts Here.</h1>
 
-      <p>
-        Find real homeowner projects, connect directly with homeowners and grow your business. Browse without an account and create a free contractor profile when you are ready.
-      </p>
+        <p>
+          Explore real projects posted by homeowners looking for contractors.
+          New projects are added daily. Browse sample projects without an
+          account and create a free contractor profile to connect directly
+          with homeowners and grow your business.
+        </p>
 
       <div class="benefits"><span>✓ Free registration</span><span>✓ No subscription currently required</span><span>✓ Contact homeowners directly</span></div>
       <div class="hero-actions">
         <a class="button button-light" href="#projects" onclick="trackEvent('browse_projects_click', {source: 'hero'})">
-          Browse Available Projects
+          Browse Sample Projects
         </a>
         <a class="button button-outline" href="https://hoyalistapp.com" onclick="openHoyaList(event)">
           Create Free Contractor Profile
@@ -474,10 +477,16 @@
       </select>
     </section>
 
-    <div class="results-top">
-      <h2>Available Projects</h2>
-      <div class="count" id="projectCount" aria-live="polite">Loading projects…</div>
-    </div>
+      <div class="results-top">
+        <h2>Sample Homeowner Projects</h2>
+          <div class="count" id="projectCount" aria-live="polite">Loading projects…</div>
+      </div>
+
+      <p style="color:var(--muted); font-size:14px; line-height:1.5;">
+        Explore real homeowner projects posted on HoyaList.
+        New projects are added daily.
+        Project availability and budgets are subject to homeowner confirmation.
+      </p>
 
     <section id="projectGrid" class="grid"></section>
 
@@ -690,7 +699,7 @@
 
           <div class="card-footer">
             <div class="budget">
-              Budget<br>
+              Reported Budget<br>
               <strong>${escapeHTML(formatBudget(project.budgetText))}</strong>
             </div>
 
@@ -741,7 +750,7 @@
         }
         return (Date.parse(b.postedDate) || 0) - (Date.parse(a.postedDate) || 0);
       });
-      projectCount.textContent = `${filtered.length} of ${allProjects.length} projects`;
+      projectCount.textContent = `${filtered.length} of ${allProjects.length} sample projects`;
 
       if (filtered.length === 0) {
         projectGrid.innerHTML = "";
